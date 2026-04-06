@@ -2,6 +2,9 @@ import datetime
 import time
 import yfinance as yf
 import alpaca_trade_api as tradeapi
+import http.server
+import socketserver
+import threading
 
 # === CONFIGURACIÓN DE ACCESO ===
 API_KEY = 'TU_API_KEY_AQUI'  # Pon tu Key de Paper Trading
@@ -90,6 +93,14 @@ class AlpacaGlobalBot:
 # --- INICIO DEL PROGRAMA ---
 bot = AlpacaGlobalBot()
 
+# Código para engañar a Render y que no cierre el bot
+def run_dummy_server():
+    handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", 10000), handler) as httpd:
+        httpd.serve_forever()
+
+# Lanzar el servidor en un hilo aparte
+threading.Thread(target=run_dummy_server, daemon=True).start()
 while True:
     try:
         bot.ejecutar_ciclo()
